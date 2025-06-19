@@ -1,0 +1,26 @@
+{
+  "name": "telegrambot",
+  "version": "1.0.0",
+  "description": "Modular Telegram bot with commands and events",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "modular",
+    "commands",
+    "events"
+  ],
+  "author": "YourName",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "node-fetch": "^3.3.2",
+    "telegraf": "^4.12.2",
+    "axios": "^1.6.2",
+    "path": "^0.12.7",
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}
