@@ -1,25 +1,34 @@
-const config = require('../config.json');
 const path = require('path');
 const fs = require('fs');
+const config = require('../config.json');
 
 module.exports = (bot) => {
   bot.on('message', async (msg) => {
-    // When bot is added to a group
     if (msg.new_chat_members) {
-      const isBotAdded = msg.new_chat_members.some(user => user.username === (await bot.getMe()).username);
-      if (isBotAdded) {
-        const groupName = msg.chat.title || "this group";
+      try {
+        const me = await bot.getMe();
+        const isBotAdded = msg.new_chat_members.some(user => user.username === me.username);
 
-        // 1. Send welcome text
-        await bot.sendMessage(msg.chat.id, `✅ ${config.botname} successfully connected to ${groupName}!`);
+        if (isBotAdded) {
+          const groupName = msg.chat.title || "this group";
 
-        // 2. Send GIF (must be uploaded in Replit Files tab)
-        const gifPath = path.join(__dirname, '..', 'norch.gif');
-        if (fs.existsSync(gifPath)) {
-          await bot.sendAnimation(msg.chat.id, fs.createReadStream(gifPath));
-        } else {
-          await bot.sendMessage(msg.chat.id, `⚠️ Missing welcome.gif file in bot folder.`);
+          // ✅ Welcome message
+          await bot.sendMessage(
+            msg.chat.id,
+            `✅ ${config.botname} successfully connected to ${groupName}!\n\n ${config.ownername}!`
+          );
+
+          // 📁 Path to norch.gif (upload this sa root folder!)
+          const gifPath = path.join(__dirname, 'gift', 'norch.gif');
+
+          if (fs.existsSync(gifPath)) {
+            await bot.sendAnimation(msg.chat.id, fs.createReadStream(gifPath));
+          } else {
+            await bot.sendMessage(msg.chat.id, `⚠️ Missing 'norch.gif' file in root folder.`);
+          }
         }
+      } catch (err) {
+        console.error('❌ Error handling group join event:', err);
       }
     }
   });
