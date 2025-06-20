@@ -12,34 +12,32 @@ const cooldowns = new Map();
 loadCommands(commands, './commands');
 loadEvents(bot, './events');
 
-// 💬 Pair reply system (PM only)
+// 💬 Pair reply system (PM only) + Command handler
 bot.on('message', async (msg) => {
-  if (msg.chat.type !== 'private') return;
-  if (!msg.text) return;
+  // Handle pair replies in PM only
+  if (msg.chat.type === 'private' && msg.text) {
+    const text = msg.text.toLowerCase();
+    const responses = {
+      hi: '👋 Hello there!',
+      'what\'s your name': `🤖 My name is ${config.botname}.`,
+      'who\'s your owner': `👑 My owner is ${config.ownername}.`,
+      'i love you': '❤️ Aww, I love you too!',
+      'are you real': '🤖 I\'m just lines of code... but I feel something. 😳',
+      'do you have feelings': 'Hmm... maybe. Do you? 🥺'
+    };
 
-  const text = msg.text.toLowerCase();
-  const responses = {
-    hi: '👋 Hello there!',
-    'what\'s your name': `🤖 My name is ${config.botname}.`,
-    'who\'s your owner': `👑 My owner is ${config.ownername}.`,
-    'i love you': '❤️ Aww, I love you too!',
-    'are you real': '🤖 I\'m just lines of code... but I feel something. 😳',
-    'do you have feelings': 'Hmm... maybe. Do you? 🥺'
-  };
-
-  for (const [key, reply] of Object.entries(responses)) {
-    if (text.includes(key)) {
-      return bot.sendMessage(msg.chat.id, reply);
+    for (const [key, reply] of Object.entries(responses)) {
+      if (text.includes(key)) {
+        return bot.sendMessage(msg.chat.id, reply);
+      }
     }
   }
-});
-
 
   // ✅ Handle inline game inputs like xox moves (1-9)
   handleInlineGames(msg, bot, commands);
 
   // ⛔ Not a command? Exit
-  if (!msg.text.startsWith(config.botprefix)) return;
+  if (!msg.text || !msg.text.startsWith(config.botprefix)) return;
 
   const args = msg.text.slice(config.botprefix.length).trim().split(/ +/);
   const cmdName = args.shift().toLowerCase();
