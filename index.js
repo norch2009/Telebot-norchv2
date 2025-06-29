@@ -12,13 +12,34 @@ const cooldowns = new Map();
 loadCommands(commands, './commands');
 loadEvents(bot, './events');
 
+bot.on("callback_query", async (ctx) => {
+  const data = ctx.data;
+  const command = commands.get(data);
+  if (command && typeof command.callback === "function") {
+    try {
+      await command.callback(bot, ctx);
+    } catch (err) {
+      console.error('❌ Callback error:', err.message);
+      await bot.answerCallbackQuery(ctx.id, {
+        text: '⚠️ Error running callback.',
+        show_alert: true
+      });
+    }
+  } else {
+    await bot.answerCallbackQuery(ctx.id, {
+      text: '❌ Unknown action.',
+      show_alert: false
+    });
+  }
+});
+
+
 // 💬 Pair reply system (PM only) + Command handler
 bot.on('message', async (msg) => {
   // Handle pair replies in PM only
   if (msg.chat.type === 'private' && msg.text) {
     const text = msg.text.toLowerCase();
     const responses = {
-      hi: '👋 Hello there!',
       'what\'s your name': `🤖 My name is ${config.botname}.`,
       'who\'s your owner': `👑 My owner is ${config.ownername}.`,
       'i love you': '❤️ Aww, I love you too!',
