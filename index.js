@@ -1,17 +1,31 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs-extra');
+const path = require('path');
+const express = require('express');
 const config = require('./config.json');
 const { loadCommands, loadEvents } = require('./utils/loader');
-const path = require('path');
-const handleInlineGames = require('./gamerunner/gamerun'); // ✅ ADD: inline handler
+const handleInlineGames = require('./gamerunner/gamerun');
 
-const bot = new TelegramBot(config.token, { polling: true });
+const app = express();
+const port = process.env.PORT || 3000;
+
+const bot = new TelegramBot(config.token);
+bot.setWebHook(`${config.webhook_url}/bot${config.token}`);
+
+app.use(express.json());
+
+app.post(`/bot${config.token}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
 const commands = new Map();
 const cooldowns = new Map();
-
 loadCommands(commands, './commands');
 loadEvents(bot, './events');
+bot.commands = commands; // Allow command list access in help.js
 
+// === CALLBACK HANDLER ===
 bot.on("callback_query", async (ctx) => {
   const data = ctx.data;
   const command = commands.get(data);
@@ -33,10 +47,8 @@ bot.on("callback_query", async (ctx) => {
   }
 });
 
-
-// 💬 Pair reply system (PM only) + Command handler
+// === MESSAGE HANDLER ===
 bot.on('message', async (msg) => {
-  // Handle pair replies in PM only
   if (msg.chat.type === 'private' && msg.text) {
     const text = msg.text.toLowerCase();
     const responses = {
@@ -54,10 +66,8 @@ bot.on('message', async (msg) => {
     }
   }
 
-  // ✅ Handle inline game inputs like xox moves (1-9)
   handleInlineGames(msg, bot, commands);
 
-  // ⛔ Not a command? Exit
   if (!msg.text || !msg.text.startsWith(config.botprefix)) return;
 
   const args = msg.text.slice(config.botprefix.length).trim().split(/ +/);
@@ -71,12 +81,10 @@ bot.on('message', async (msg) => {
     );
   }
 
-  // 🛡️ Owner-only check
   if (command.permission === 'owner' && msg.from.id !== config.owneruid) {
     return bot.sendMessage(msg.chat.id, '⚠️ This command is restricted to the bot owner.');
   }
 
-  // ⏳ Cooldown check
   const userCooldowns = cooldowns.get(command.name) || new Map();
   const now = Date.now();
   const cooldownAmount = (command.cooldown || 0) * 1000;
@@ -98,7 +106,7 @@ bot.on('message', async (msg) => {
   }
 });
 
-// Levenshtein function for suggestion
+// === Levenshtein (suggestion for typos) ===
 function levenshtein(a, b) {
   const m = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
   for (let i = 0; i <= a.length; i++) m[i][0] = i;
@@ -111,3 +119,8 @@ function levenshtein(a, b) {
   }
   return m[a.length][b.length];
 }
+
+// === Start Express server ===
+app.listen(port, () => {
+  console.log(`🚀 Bot server running on port ${port}`);
+});
