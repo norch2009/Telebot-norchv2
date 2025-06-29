@@ -4,5 +4,6 @@
   "owneruid": 123456789,
   "botname": "NorchBot",
   "botprefix": "!",
-  "token": "8004609919:AAG2nSVO0_ofCRHvRPjJ5RDZXigH21Hs4s4"
+  "token": "8004609919:AAG2nSVO0_ofCRHvRPjJ5RDZXigH21Hs4s4",
+  "webhook_url": "https://telebot-norchv2.onrender.com"
 }
