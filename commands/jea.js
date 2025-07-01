@@ -36,7 +36,7 @@ Be warm and affectionate, answer in a natural and casual tone.
       // Combine persona with user question
       const fullPrompt = `${personaPrompt}\n\nUser: ${question}\nJea:`;
 
-      const apiUrl = `https://80f92850-c1cd-4a43-8ff5-c402ed1115c7-00-3o68q4fn48li3.sisko.replit.dev/api/gpt?ask=${encodeURIComponent(fullPrompt)}&uid=${encodeURIComponent(uid)}`;
+      const apiUrl = `https://gpt-40.onrender.com/api/gpt?ask=${encodeURIComponent(fullPrompt)}&uid=${encodeURIComponent(uid)}`;
       const response = await axios.get(apiUrl);
       const jeaReply = response.data?.response;
 
@@ -48,7 +48,7 @@ Be warm and affectionate, answer in a natural and casual tone.
       }
 
       // Edit the message with Jea's sweet reply
-      await bot.editMessageText(`💗 *Jea says:*\n${jeaReply}`, {
+      await bot.editMessageText(`\n${jeaReply}`, {
         chat_id: chatId,
         message_id: sent.message_id,
         parse_mode: "Markdown"
