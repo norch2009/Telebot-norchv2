@@ -75,7 +75,7 @@ bot.on('message', async (msg) => {
       await bot.sendChatAction(chatId, 'typing');
 
       const uid = msg.from.username || msg.from.first_name || "guest";
-      const apiUrl = `https://80f92850-c1cd-4a43-8ff5-c402ed1115c7-00-3o68q4fn48li3.sisko.replit.dev/api/gpt?ask=${encodeURIComponent(msg.text)}&uid=${encodeURIComponent(uid)}`;
+      const apiUrl = `https://gpt-40.onrender.com/api/gpt?ask=${encodeURIComponent(msg.text)}&uid=${encodeURIComponent(uid)}`;
 
       const res = await axios.get(apiUrl);
       const aiReply = res.data?.response;
