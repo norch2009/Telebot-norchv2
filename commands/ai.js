@@ -27,7 +27,7 @@ module.exports = {
       const sent = await bot.sendMessage(chatId, "🔄 Thinking...");
 
       // Build and call your API
-      const apiUrl = `https://80f92850-c1cd-4a43-8ff5-c402ed1115c7-00-3o68q4fn48li3.sisko.replit.dev/api/gpt?ask=${encodeURIComponent(ask)}&uid=${encodeURIComponent(uid)}`;
+      const apiUrl = `https://gpt-40.onrender.com/api/gpt?ask=${encodeURIComponent(ask)}&uid=${encodeURIComponent(uid)}`;
       const response = await axios.get(apiUrl);
       const answer = response.data?.response;
 
