@@ -147,12 +147,17 @@ function levenshtein(a, b) {
   return m[a.length][b.length];
 }
 
+// === Basic route for uptime monitor ===
+app.get("/", (req, res) => {
+  res.send("🤖 TeleBot is running!");
+});
+
 // === Start Express Server ===
 app.listen(port, () => {
   console.log(`🚀 Bot server running on port ${port}`);
 });
 
-// === Auto-Restart every 30 minutes (Render will restart it) ===
+// === Auto-Restart every 30 minutes ===
 setInterval(() => {
   console.log("🔁 Auto-restarting bot (30 min cycle)...");
   process.exit(0);
